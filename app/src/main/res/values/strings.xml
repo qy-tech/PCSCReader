@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">PcscDemo</string>
+    <string name="user_name">姓名 %s</string>
+    <string name="card_type">类型 %s</string>
+    <string name="country_code">国家码 %s</string>
+    <string name="card_number">卡号 %s</string>
+    <string name="gender">性别 %s</string>
+    <string name="nationality">国籍 %s</string>
+    <string name="birthday">生日 %s</string>
+    <string name="issue_date">签发日期 %s</string>
+    <string name="birth_place">出生地 %s</string>
+    <string name="issue_place">签发地 %s</string>
+    <string name="expiry_data">有效期至 %s</string>
+    <string name="authority">签发机关 %s</string>
+    <string name="bearer_signature">持证人签名</string>
+</resources>

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewmodel"
+            type="com.jax.pcscdemo.ui.main.MainViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:id="@+id/iv_passport_avatars"
+            android:layout_width="360dp"
+            android:layout_height="360dp"
+            android:layout_margin="20dp"
+            android:src="#cccccc"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_card_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@{@string/card_type(viewmodel.passportInfo.passType)}"
+            android:textSize="28sp"
+            app:layout_constraintStart_toEndOf="@id/iv_passport_avatars"
+            app:layout_constraintTop_toTopOf="@id/iv_passport_avatars" />
+
+        <TextView
+            android:id="@+id/tv_country_code"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@{@string/country_code(viewmodel.passportInfo.country)}"
+            android:textSize="28sp"
+            app:layout_constraintStart_toEndOf="@id/tv_card_type"
+            app:layout_constraintTop_toTopOf="@id/iv_passport_avatars" />
+
+        <TextView
+            android:id="@+id/tv_card_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@{@string/card_number(viewmodel.passportInfo.passNumber)}"
+            android:textSize="28sp"
+            app:layout_constraintStart_toEndOf="@id/tv_country_code"
+            app:layout_constraintTop_toTopOf="@id/iv_passport_avatars" />
+
+        <TextView
+            android:id="@+id/tv_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@{@string/user_name(viewmodel.passportInfo.otherName)}"
+            android:textSize="28sp"
+            app:layout_constraintStart_toEndOf="@id/iv_passport_avatars"
+            app:layout_constraintTop_toBottomOf="@id/tv_card_type" />
+
+        <TextView
+            android:id="@+id/tv_user_gender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@{@string/gender(viewmodel.passportInfo.gender)}"
+            android:textSize="28sp"
+            app:layout_constraintStart_toEndOf="@id/iv_passport_avatars"
+            app:layout_constraintTop_toBottomOf="@id/tv_user_name" />
+
+        <TextView
+            android:id="@+id/tv_user_nationality"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@{@string/nationality(viewmodel.passportInfo.country)}"
+            android:textSize="28sp"
+            app:layout_constraintStart_toEndOf="@id/tv_user_gender"
+            app:layout_constraintTop_toBottomOf="@id/tv_user_name" />
+
+        <TextView
+            android:id="@+id/tv_user_birthday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@{@string/birthday(viewmodel.passportInfo.birthday)}"
+            android:textSize="28sp"
+            app:layout_constraintStart_toEndOf="@id/tv_user_nationality"
+            app:layout_constraintTop_toBottomOf="@id/tv_user_name" />
+
+
+        <TextView
+            android:id="@+id/tv_birth_place"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@{@string/birth_place(``)}"
+            android:textSize="28sp"
+            app:layout_constraintStart_toEndOf="@id/iv_passport_avatars"
+            app:layout_constraintTop_toBottomOf="@id/tv_user_gender" />
+
+        <TextView
+            android:id="@+id/tv_issue_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@{@string/issue_date(``)}"
+            android:textSize="28sp"
+            app:layout_constraintStart_toEndOf="@id/tv_birth_place"
+            app:layout_constraintTop_toBottomOf="@id/tv_user_gender" />
+
+        <TextView
+            android:id="@+id/tv_issue_place"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@{@string/issue_place(``)}"
+            android:textSize="28sp"
+            app:layout_constraintStart_toEndOf="@id/iv_passport_avatars"
+            app:layout_constraintTop_toBottomOf="@id/tv_birth_place" />
+
+        <TextView
+            android:id="@+id/tv_expiry_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@{@string/expiry_data(viewmodel.passportInfo.dueDate)}"
+            android:textSize="28sp"
+            app:layout_constraintStart_toEndOf="@id/tv_issue_place"
+            app:layout_constraintTop_toBottomOf="@id/tv_birth_place" />
+
+        <TextView
+            android:id="@+id/tv_authority"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@{@string/authority(viewmodel.passportInfo.issueAgency)}"
+            android:textSize="28sp"
+            app:layout_constraintStart_toEndOf="@id/iv_passport_avatars"
+            app:layout_constraintTop_toBottomOf="@id/tv_issue_place" />
+
+        <TextView
+            android:id="@+id/tv_bearer_signature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:text="@string/bearer_signature"
+            android:textSize="28sp"
+            app:layout_constraintStart_toEndOf="@id/tv_authority"
+            app:layout_constraintTop_toBottomOf="@id/tv_issue_place" />
+
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:id="@+id/iv_bearer_signature"
+            android:layout_width="200dp"
+            android:layout_height="100dp"
+            android:layout_margin="20dp"
+            android:src="#cccccc"
+            app:layout_constraintStart_toEndOf="@id/tv_authority"
+            app:layout_constraintTop_toBottomOf="@id/tv_authority" />
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
