@@ -6,7 +6,6 @@
 
    ```groovy
        implementation files('libs/pcscReader-release.aar')
-    		implementation 'com.gemalto.jp2:jp2-android:1.0'
        implementation "com.jakewharton.timber:timber:4.7.1"
        implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3'
        implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3"
@@ -22,69 +21,65 @@
            super.onActivityCreated(savedInstanceState)
            //省略其他代码......
            smartCardManager = SmartCardManager(requireContext(), smartCardStatusListener)
-           val result = smartCardManager.connectCardReader()
-           if (!result) {
-               Timber.e("connectCardReader failed ,try aging later")
-               return
-           }
+
        }
-   private val smartCardStatusListener = object : SmartCardManager.SCardStatusChangeListener {
-     			//放下卡片回调
-           override fun onSCardConnect(atr: String) {
-               Timber.d("onSCardConnect atr is $atr")
-               if (atr.isEmpty()) {
-                   return
-               }
-               // 使用 OCR识别到的机读区数据初始化护照
-               val result = smartCardManager.initPassport(mrzDT3)
-               if (!result) {
-                   return
-               }
-               //显示进度条
-               dataBinding.progress.visibility = View.VISIBLE
-               GlobalScope.launch(Dispatchers.IO) {
-                   //读区 DG1~DG2 和 DG11~DG12 分区数据
-                   var data = smartCardManager.readingPassport(EF.COM)
-                   val com = EF.parsingCOM(data)
-                   Timber.d("EF.COM is $com")
-                   data = smartCardManager.readingPassport(EF.DG1)
-                   val mrzInfo = EF.parsingDG1(data)
-                   Timber.d("EF.DG1 is $mrzInfo")
-                   var passportInfo = PCSCUtils.getPassportInfo(mrzInfo)
-                   data = smartCardManager.readingPassport(EF.DG2)
-                   val bitmap = EF.parsingDG2(data)
-                   if (bitmap != null) {
-                       launch(Dispatchers.Main) {
-                           dataBinding.ivPassportAvatars.setImageBitmap(bitmap)
-                       }
-                   }
-                   data = smartCardManager.readingPassport(EF.DG11)
-                   passportInfo = EF.parsingDG11(data, passportInfo)
-                   data = smartCardManager.readingPassport(EF.DG12)
-                   passportInfo = EF.parsingDG12(data, passportInfo)
-                   launch(Dispatchers.Main) {
-                       viewModel.setPassportInfo(passportInfo)
-                       Timber.d("dismiss progress")
-                       dataBinding.progress.visibility = View.GONE
-                   }
-               }
+     private val smartCardStatusListener = object : SCardStatusChangeListener {
+        override fun onSCardConnect(atr: String) {
+            Timber.d("onSCardConnect atr is $atr")
+            if (atr.isEmpty()) {
+                return
+            }
+            smartCardManager.initCard(mrzDT3)
+
+            smartCardManager.launch(Dispatchers.Main) {
+                withContext(Dispatchers.IO) {
+                    smartCardManager.readCard(EF.COM)
+                }?.let {
+                    Timber.d("onSCardConnect: ${EF.parsingCOM(it)}")
+                }
+
+                withContext(Dispatchers.IO) {
+                    smartCardManager.readCard(EF.DG1)
+                }?.let {
+                    val dg1 = EF.parsingDG1(it)
+                    viewModel.setPassportInfo(PCSCUtils.getPassportInfo(dg1))
+                    Timber.d("onSCardConnect: $dg1")
+                }
+
+                withContext(Dispatchers.IO) {
+                    smartCardManager.readCard(EF.DG2)
+                }?.let {
+                    val dg2 = EF.parsingDG2(it)
+                    dataBinding.ivPassportAvatars.setImageBitmap(dg2)
+                }
+            }
+
+        }
+
+        override fun onSCardDisconnect() {
+            Timber.d("onSCardDisconnect")
+            viewModel.setPassportInfo(null)
+            dataBinding.ivPassportAvatars.setImageResource(R.color.cardview_dark_background)
+        }
+    }
    
    
-           }
-     
-   				//拿走卡片的回调
-           override fun onSCardDisconnect() {
-               Timber.d("onSCardDisconnect")
-               viewModel.setPassportInfo(null)
-             dataBinding.ivPassportAvatars.setImageResource(R.color.cardview_dark_background)
-           }
-       }
-   
-   override fun onDestroy() {
-           super.onDestroy()
-     			// 释放资源
-           smartCardManager.destroyCardReader()
-       }
+    override fun onResume() {
+        super.onResume()
+        smartCardManager.launch {
+            smartCardManager.connectCardReader()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        smartCardManager.disConnectCardReader()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        smartCardManager.release()
+    }
    
    ```
 
