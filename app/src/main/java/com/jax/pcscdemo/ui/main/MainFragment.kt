@@ -10,9 +10,12 @@ import com.jax.pcscdemo.R
 import com.jax.pcscdemo.databinding.MainFragmentBinding
 import com.qytech.pcscreader.SmartCardManager
 import com.qytech.pcscreader.apdu.EF
-import com.qytech.pcscreader.apdu.ISmartCardManger
 import com.qytech.pcscreader.apdu.PCSCUtils
-import com.qytech.pcscreader.apdu.SCardStatusChangeListener
+import com.qytech.pcscreader.manager.ISmartCardManager
+import com.qytech.pcscreader.manager.SCardStatusChangeListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class MainFragment : Fragment() {
@@ -23,7 +26,7 @@ class MainFragment : Fragment() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var dataBinding: MainFragmentBinding
-    private lateinit var smartCardManager: ISmartCardManger
+    private lateinit var smartCardManager: SmartCardManager
     private var mrzDT3 =
         "POCHNLI<<DONGHAN<<<<<<<<<<<<<<<<<<<<<<<<<<<<\nE872545052CHN8404039M2610092MAOOLGKLLKLKA998"
     private var mrzDT2 =
@@ -49,12 +52,14 @@ class MainFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        smartCardManager.connectCardReader { }
+        smartCardManager.launch {
+            smartCardManager.connectCardReader()
+        }
     }
 
     override fun onStop() {
         super.onStop()
-        smartCardManager.disConnectCardReader { }
+        smartCardManager.disConnectCardReader()
     }
 
     override fun onDestroy() {
@@ -69,50 +74,36 @@ class MainFragment : Fragment() {
                 return
             }
             smartCardManager.initCard(mrzDT3)
-            // 同步读取和异步读取任选一种
-            // 推荐使用异步方式,
-            // 不要同步和异步混用，
-            // 如果同步和异步混用的话基本上会导致 MAC 计算错误
 
-            if (System.currentTimeMillis() % 2 == 0L) {
-                readAsync()
-            } else {
-                readSync()
+            smartCardManager.launch(Dispatchers.Main) {
+                withContext(Dispatchers.IO) {
+                    smartCardManager.readCard(EF.COM)
+                }?.let {
+                    Timber.d("onSCardConnect: ${EF.parsingCOM(it)}")
+                }
+
+                withContext(Dispatchers.IO) {
+                    smartCardManager.readCard(EF.DG1)
+                }?.let {
+                    val dg1 = EF.parsingDG1(it)
+                    viewModel.setPassportInfo(PCSCUtils.getPassportInfo(dg1))
+                    Timber.d("onSCardConnect: $dg1")
+                }
+
+                withContext(Dispatchers.IO) {
+                    smartCardManager.readCard(EF.DG2)
+                }?.let {
+                    val dg2 = EF.parsingDG2(it)
+                    dataBinding.ivPassportAvatars.setImageBitmap(dg2)
+                }
             }
+
         }
 
         override fun onSCardDisconnect() {
             Timber.d("onSCardDisconnect")
             viewModel.setPassportInfo(null)
             dataBinding.ivPassportAvatars.setImageResource(R.color.cardview_dark_background)
-        }
-    }
-
-    private fun readAsync() {
-        smartCardManager.readCard(EF.COM) { com ->
-            val efCom = EF.parsingCOM(com.getOrDefault(""))
-            Timber.d("readAsync EF.COM is $efCom")
-
-            smartCardManager.readCard(EF.DG1) { dg1 ->
-                val mrzInfo = EF.parsingDG1(dg1.getOrDefault(""))
-                Timber.d("readAsync EF.DG1 is $mrzInfo")
-                val passportInfo = PCSCUtils.getPassportInfo(mrzInfo)
-                viewModel.setPassportInfo(passportInfo)
-            }
-        }
-    }
-
-    private fun readSync() {
-        smartCardManager.readCard(EF.COM, async = false) { com ->
-            val efCom = EF.parsingCOM(com.getOrDefault(""))
-            Timber.d("readSync EF.COM is $efCom")
-        }
-
-        smartCardManager.readCard(EF.DG1, async = false) { dg1 ->
-            val mrzInfo = EF.parsingDG1(dg1.getOrDefault(""))
-            Timber.d("readSync EF.DG1 is $mrzInfo")
-            val passportInfo = PCSCUtils.getPassportInfo(mrzInfo)
-            viewModel.setPassportInfo(passportInfo)
         }
     }
 }
