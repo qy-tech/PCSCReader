@@ -12,9 +12,8 @@
        implementation 'com.gemalto.jp2:jp2-android:1.0'	
    ```
 
-   
 
-2. 创建SmartCardManager并设置监听
+2. 基本使用介绍
 
    ```kotlin
    override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -83,41 +82,10 @@
    
    ```
 
-3. PassportInfo 数据类介绍
+3. API 文档
 
-   ```kotlin
-   data class PassportInfo(
-       var passType: String = "",//护照类型
-       var passNumber: String = "",//卡号
-       var numberCheck: String = "",//卡号校验位
-       var country: String = "",//国籍
-       var birthday: String = "",//生日
-       var birthdayCheck: String = "",//生日校验
-       var gender: String = "",//性别
-       var dueDate: String = "",//护照到期时间校验位
-       var dueCheck: String = "",//护照到期时间校验位
-       var optionData: String = "",//可选择填充数据
-       var checkDigit: String = "",//校验位数据
-       var compositeCheckDigit: String = "",//综合校验位
-       var fullName: String = "",//本国字符集的全名
-       var otherName: String = "",//本国字符集的全名
-       var personalNumber: String = "",//个人号码
-       var yearMonthDay: String = "",//以 yyyymmdd 表示的出生日期
-       var placeBirth: String = "",// 出生地
-       var permanentAddress: String = "",// 永久地址
-       var phoneNumber: String = "",// 电话
-       var job: String = "",// 职业
-       var jobTitle: String = "",// 职衔
-       var personalResume: String = "",// 个人简历
-       var issueAgency: String = "",//签发机构
-       var issueDate: String = "",//签发日期
-   ) {
-       //获取 MRZ 信息
-       fun getMRZInfo(): String {
-           return "$passNumber$numberCheck$birthday$birthdayCheck$dueDate$dueCheck"
-               .replace("<+".toRegex(), "")
-       }
-   }
-   ```
+[PCSCReader DOC](https://qy-tech.github.io/PCSCReader/)
 
-   
+4. 更新日志
+
+* `[ 2021-08-31 ]` ： 修复连续刷卡或者切后台时可能会出现读取设备状态异常并且无法恢复问题

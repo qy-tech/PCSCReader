@@ -25,6 +25,6 @@ task clean(type: Delete) {
 apply plugin: 'org.jetbrains.dokka'
 
 tasks.withType(DokkaMultiModuleTask).configureEach {
-    outputDirectory = rootProject.file('docs/api')
+    outputDirectory = rootProject.file('docs/')
     failOnWarning = true
 }
