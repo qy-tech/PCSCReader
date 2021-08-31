@@ -1,0 +1,12 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+
+module:app
+com.jax.pcscdemo
+com.jax.pcscdemo.ui.main
+module:pcscReader
+com.qytech.pcscreader
+com.qytech.pcscreader.apdu
+com.qytech.pcscreader.encryption
+com.qytech.pcscreader.manager
+com.qytech.pcscreader.smartcard
